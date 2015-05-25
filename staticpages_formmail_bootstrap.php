@@ -852,7 +852,11 @@ $seni
 <div id="$page">
 $valid
 <form name="subForm" class="form-block" method="post" action="{$pageurl}">
+<div class="row">
+  <div class="col-md-6">
 $form
+  </div>
+</div>
 </form>
 </div>
 
@@ -874,9 +878,7 @@ END;
 
   $out_html = <<<END
 
-<div data-uk-button-checkbox>
 $seni
-</div>
 <div>
 <p><strong>お問い合わせを受け付けました。</strong></p>
 <p>※お問い合わせ確認のメールを自動送信しました。<br />
