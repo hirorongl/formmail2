@@ -702,7 +702,7 @@ function _fmMkTable ($tables, $action) {
     $divclass=''; $labelclass=''; $formclass='';
     // エラーチェック
     if (!empty($_POST) && !empty($_POST['action'])) { $errflg = _fmValidateLines($lines); }
-    if ($errflg) { $textclass=' has-error has-feedback'; $labelclass=' bg-danger'; $formclass=' form-danger'; }
+    if ($errflg) { $divclass=' has-error has-feedback'; $labelclass=' bg-danger'; $formclass=' form-danger'; }
     $buf .= LB;
     $buf .= '    <div class="form-group'.$divclass.'"><label class="control-label'.$labelclass.'">';
     if (isset($lines['header'])) { $buf .= $lines['header']; }
@@ -748,10 +748,6 @@ function _fmMkForm ($items, $action) {
             case 'table_captcha': $buf .= _fmMkTable($value, $action); break;
           }
         }
-        $buf .= <<<END
-
-    </dl>
-END;
       }
     } elseif (!empty($item['action'])) {         //送信ボタン
       if ($item['action'] == $action) {
