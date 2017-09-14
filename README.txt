@@ -1,4 +1,4 @@
-静的ページPHPでフォームメールページを作成                        Version: 2.1.12
+静的ページPHPでフォームメールページを作成                        Version: 2.1.11
                                                               Create: 2017/09/14
                              Authors: Hiroshi Sakuramoto - hiro AT winkey DOT jp
 

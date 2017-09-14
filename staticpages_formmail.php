@@ -3,7 +3,7 @@
 // +---------------------------------------------------------------------------+
 // | Copyright (C) 2008-2017 by the following authors:
 // | Authors    : Hiroshi Sakuramoto - hiro AT winkey DOT jp
-// | Version: 2.1.12
+// | Version: 2.1.11
 // +---------------------------------------------------------------------------+
 global $_CONF,$_USER,$_PLUGINS,$_SCRIPTS,$page; // Geeklog変数
 global $_fmtokenttl; // FormMail変数
