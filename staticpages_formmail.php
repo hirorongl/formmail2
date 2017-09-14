@@ -1,15 +1,15 @@
-// +---------------------------------------------------------------------------+
+// +------------------------------------------------------------------+
 // | FormMail Static Page for Geeklog 2.1 higher for UIkit
-// +---------------------------------------------------------------------------+
+// +------------------------------------------------------------------+
 // | Copyright (C) 2008-2017 by the following authors:
 // | Authors    : Hiroshi Sakuramoto - hiro AT winkey DOT jp
 // | Version: 2.1.11
-// +---------------------------------------------------------------------------+
+// +------------------------------------------------------------------+
 global $_CONF,$_USER,$_PLUGINS,$_SCRIPTS,$page; // Geeklog変数
 global $_fmtokenttl; // FormMail変数
 if (!defined('XHTML')) define('XHTML', ' /');
 
-// --[[ 初期設定 ]]------------------------------------------------------------
+// --[[ 初期設定 ]]---------------------------------------------------
 # 問合せを管理者へ通知の設定
 #    複数のE-mailはカンマ(,)で区切りで指定する(スペース等はあけない)
 #      例) 'info@hoge.com,admin@page.com'
@@ -310,7 +310,7 @@ array( 'string'=>'</div>' ),
 
 
 
-// --[[ 関数群 ]]---------------------------------------------------------------
+// --[[ 関数群 ]]-----------------------------------------------------
 if(!function_exists('_fmGetAction')){
 function _fmGetAction ($err) {
   $buf = '';
@@ -814,20 +814,21 @@ function _fmChkReferer ($pu,$err) {
 
 
 
-// --[[ 初期処理 ]]------------------------------------------------------------
+// --[[ 初期処理 ]]---------------------------------------------------
 # POSTデータを直接変換 (全角から半角へ、カタカナ半角からカタカナ全角へ)
 if (!empty($zentohan_itemname)) { foreach (explode(',',$zentohan_itemname) as $k) { if (!empty($_POST[$k])) $_POST[$k] = mb_convert_kana($_POST[$k], 'askh'); } }
 if (!empty($kana_hantozen_itemname)) { foreach (explode(',',$kana_hantozen_itemname) as $k) { if (!empty($_POST[$k])) $_POST[$k] = mb_convert_kana($_POST[$k], 'K'); } }
 if (!empty($kana_hiratokana_itemname)) { foreach (explode(',',$kana_hiratokana_itemname) as $k) { if (!empty($_POST[$k])) $_POST[$k] = mb_convert_kana($_POST[$k], 'C'); } }
 # データを保存用に加工
 foreach ($_POST as $k => $v) {
-    $fld_list[$k] = preg_replace('/,/', '，', $_POST[$k]);
-    $fld_list[$k] = preg_replace('/"/', '”', $fld_list[$k]);
-    $fld_list[$k] = preg_replace("/'/", "’", $fld_list[$k]);
-    $fld_list[$k] = preg_replace('/`/', '‘', $fld_list[$k]);
-    $fld_list[$k] = preg_replace('/;/', '；', $fld_list[$k]);
-    $fld_list[$k] = preg_replace(preg_quote('#'.chr(92).'#'), '￥', $fld_list[$k]);
-    $fld_list[$k] = COM_applyFilter($fld_list[$k]);
+  #以下の記号は大文字にして保存
+  $fld_list[$k] = preg_replace('/,/', '，', $_POST[$k]);
+  $fld_list[$k] = preg_replace('/"/', '”', $fld_list[$k]);
+  $fld_list[$k] = preg_replace("/'/", "’", $fld_list[$k]);
+  $fld_list[$k] = preg_replace('/`/', '‘', $fld_list[$k]);
+  $fld_list[$k] = preg_replace('/;/', '；', $fld_list[$k]);
+  $fld_list[$k] = preg_replace(preg_quote('#'.chr(92).'#'), '￥', $fld_list[$k]);
+  $fld_list[$k] = COM_applyFilter($fld_list[$k]);
 }
 # CSVファイルのフルパス
 $save_csv_file = $save_csv_path . $save_csv_name;
@@ -850,7 +851,7 @@ $action = _fmGetAction($valid);
 
 
 
-// --[[ 第1ステップ : フォーム表示(入力＆確認) ]]-------------------------------
+// --[[ 第1ステップ : フォーム表示(入力＆確認) ]]---------------------
 if ($action == 'input' || $action == 'confirm') {
 /**
 * フォーム画面HTML { ここから
@@ -882,7 +883,7 @@ END;
 
 
 
-// --[[ 第2ステップ : 完了表示＆メール送信 ]]-----------------------------------
+// --[[ 第2ステップ : 完了表示＆メール送信 ]]-------------------------
 } elseif ($action == 'finish') {
 /**
 * 完了画面HTML { ここから
