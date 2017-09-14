@@ -1,9 +1,9 @@
 // +---------------------------------------------------------------------------+
 // | FormMail Static Page for Geeklog 2.1 higher for UIkit
 // +---------------------------------------------------------------------------+
-// | Copyright (C) 2008-2015 by the following authors:
+// | Copyright (C) 2008-2017 by the following authors:
 // | Authors    : Hiroshi Sakuramoto - hiro AT winkey DOT jp
-// | Version: 2.1.10
+// | Version: 2.1.12
 // +---------------------------------------------------------------------------+
 global $_CONF,$_USER,$_PLUGINS,$_SCRIPTS,$page; // Geeklog変数
 global $_fmtokenttl; // FormMail変数
@@ -645,7 +645,7 @@ function _fmMkForm_Item ($items, $action, $addclass) {
     switch ($items['type']) {
       case 'text': $buf .= _fmMkForm_Input($items, $addclass); break;
       case 'password': $buf .= _fmMkForm_Input($items, $addclass); break;
-      case 'hidden': $buf .= _fmMkForm_Input($items); break;
+      case 'hidden': $buf .= _fmMkForm_Input($items, $addclass, true); break;
       case 'radio': $buf .= _fmMkForm_Input($items, $addclass); break;
       case 'checkbox': $buf .= _fmMkForm_Input($items, $addclass); break;
       case 'select': $buf .= _fmMkForm_Select($items, $addclass); break;
@@ -958,6 +958,50 @@ END;
 * } ここまで 送信メール内容 - 入力者
 */
 
+  # メール送信前にcsvを出力
+  # ->送信エラーでもCSVで確認できるように対応
+  if ($save_csv > 0) {
+    $fldnames = _fmMkCsv($form_items);
+    $delimiter = ',';
+    if ($save_csv > 1) { $delimiter = chr(9); }
+    $enclosure = '"';
+    # CSV出力
+    $str = '';
+    $escape_char = chr(92);
+    foreach ($fldnames as $n) {
+      $v = empty($fld_list[$n]) ? '' : $fld_list[$n] ;
+      if (strpos($v, $delimiter) !== false ||
+          strpos($v, $enclosure) !== false ||
+          strpos($v, chr(10)) !== false ||
+          strpos($v, chr(13)) !== false ||
+          strpos($v, chr(9)) !== false ||
+          strpos($v, ' ') !== false) {
+        $str2 = $enclosure;
+        $escaped = 0;
+        $len = strlen($v);
+        for ($i=0;$i<$len;$i++) {
+          if ($v[$i] == $escape_char) {
+            $escaped = 1;
+          } else if (!$escaped && $v[$i] == $enclosure) {
+            $str2 .= $enclosure;
+          } else {
+            $escaped = 0;
+          }
+          $str2 .= $v[$i];
+        }
+        $str2 .= $enclosure;
+        $str .= $str2.$delimiter;
+      } else {
+        $str .= $v.$delimiter;
+      }
+    }
+    $str = date($date_csv) . $delimiter . $_SERVER['REMOTE_ADDR'] . $delimiter . substr($str,0,-1);
+    $str .= LB;
+    if( !empty( $save_csv_lang ) ) { $str = mb_convert_encoding($str, $save_csv_lang); }
+    $fp = fopen($save_csv_file, 'a');
+    fwrite($fp, $str);  # CSV書き出し
+    fclose($fp);
+  }
 
   # メール送信
   $ownererr = false;
@@ -998,52 +1042,18 @@ END;
     $email2 = COM_mail( $fld_list[$email_input_name], "$usr_subject", $out_mail_user, $email_from, false); # 問合せ者へメール
   }
   if ($email1 && $email2) { # どちらの送信も成功したら
-    # csv出力する
+    $retval = $out_html;
+  } else {
+    $retval = $lang['transmiterror']; # メール送信が失敗したら
+    #メールエラーをCSVに書き出す
     if ($save_csv > 0) {
-      $fldnames = _fmMkCsv($form_items);
-      $delimiter = ',';
-      if ($save_csv > 1) { $delimiter = chr(9); }
-      $enclosure = '"';
-      # CSV出力
-      $str = '';
-      $escape_char = chr(92);
-      foreach ($fldnames as $n) {
-        $v = empty($fld_list[$n]) ? '' : $fld_list[$n] ;
-        if (strpos($v, $delimiter) !== false ||
-            strpos($v, $enclosure) !== false ||
-            strpos($v, chr(10)) !== false ||
-            strpos($v, chr(13)) !== false ||
-            strpos($v, chr(9)) !== false ||
-            strpos($v, ' ') !== false) {
-          $str2 = $enclosure;
-          $escaped = 0;
-          $len = strlen($v);
-          for ($i=0;$i<$len;$i++) {
-            if ($v[$i] == $escape_char) {
-              $escaped = 1;
-            } else if (!$escaped && $v[$i] == $enclosure) {
-              $str2 .= $enclosure;
-            } else {
-              $escaped = 0;
-            }
-            $str2 .= $v[$i];
-          }
-          $str2 .= $enclosure;
-          $str .= $str2.$delimiter;
-        } else {
-          $str .= $v.$delimiter;
-        }
-      }
-      $str = date($date_csv) . $delimiter . substr($str,0,-1);
+      $str = date($date_csv) . $delimiter . $lang['transmiterror'];
       $str .= LB;
-      if( !empty( $save_csv_lang ) ) { $str = mb_convert_encoding($str, $save_csv_lang); }
+      if( !empty( $save_csv_lang ) ) { $str = mb_convert_encoding($str, $save_csv_lang,"auto"); }
       $fp = fopen($save_csv_file, 'a');
       fwrite($fp, $str);  # CSV書き出し
       fclose($fp);
     }
-    $retval = $out_html;
-  } else {
-    $retval = $lang['transmiterror']; # メール送信が失敗したら
   }
 }
 // 「PHPを実行」の場合
