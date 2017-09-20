@@ -3,7 +3,7 @@
 // +------------------------------------------------------------------+
 // | Copyright (C) 2008-2017 by the following authors:
 // | Authors    : Hiroshi Sakuramoto - hiro AT winkey DOT jp
-// | Version: 2.1.11
+// | Version: 2.1.12
 // +------------------------------------------------------------------+
 global $_CONF,$_USER,$_PLUGINS,$_SCRIPTS,$page; // Geeklog変数
 global $_fmtokenttl; // FormMail変数
@@ -839,8 +839,10 @@ if (!empty($_POST) && !SECINT_checkToken()) { $m=isset($_POST[$email_input_name]
 
 
 // Refererチェック
+$_spflg_ref_err=false;
 if (!empty($_spreferercheck) && $_spreferercheck = 1) {
   $valid = _fmChkReferer($pageurl,$_spreferererrormsg);
+  if (!empty($valid)) { $_spflg_ref_err=true; }
 }
 
 // エラーチェック
@@ -860,6 +862,7 @@ if ($action == 'input' || $action == 'confirm') {
   $seni = _fmMkSeni($seni_items, $action);
   // 入力フォーム
   $form = _fmMkForm($form_items, $action);
+  if ($_spflg_ref_err) { $form=''; COM_accessLog("REFERER Error in staticpage({$page}) - Referring: {$_SERVER['HTTP_REFERER']}"); }
 
   $retval = <<<END
 

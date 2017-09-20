@@ -1,5 +1,5 @@
-静的ページPHPでフォームメールページを作成                        Version: 2.1.11
-                                                              Create: 2017/09/14
+静的ページPHPでフォームメールページを作成                        Version: 2.1.12
+                                                              Create: 2017/09/20
                              Authors: Hiroshi Sakuramoto - hiro AT winkey DOT jp
 
 
@@ -305,6 +305,8 @@ array( 'type'=>'text', 'name'=>'q_date1', 'id'=>'q_date1', 'size'=>'20', 'maxlen
 
 
 【更新履歴】
+2017/09/20  2.1.12
+ * Refererチェックでエラー時にFORMが表示される不具合を修正
 2017/09/14  2.1.11
  * 独自のhidden項目でのエラーを修正
  * CSVの出力をメール送信前に移動
