@@ -840,7 +840,7 @@ if (!empty($_POST) && !SECINT_checkToken()) { $m=isset($_POST[$email_input_name]
 
 // Refererチェック
 $_spflg_ref_err=false;
-if (!empty($_spreferercheck) && $_spreferercheck = 1) {
+if (!empty($_spreferercheck) && $_spreferercheck == 1) {
   $valid = _fmChkReferer($pageurl,$_spreferererrormsg);
   if (!empty($valid)) { $_spflg_ref_err=true; }
 }
