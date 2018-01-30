@@ -914,7 +914,7 @@ END;
 
 
   # <br /> を改行コードに変換
-  $pat = '/<br[[:space:]]*\/?[[:space:]]*>/i';
+  $pat = '/<br[[:space:]]*'.chr(92).'/?[[:space:]]*>/i';
   foreach ($fld_list as $k => $v) { $fld_list[$k] = preg_replace($pat, LB, $fld_list[$k]); }
   $lang['sign_admin'] = preg_replace($pat, LB, $lang['sign_admin']);
   $lang['sign_user'] = preg_replace($pat, LB, $lang['sign_user']);
