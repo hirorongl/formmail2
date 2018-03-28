@@ -103,7 +103,7 @@ $required_string = '<span class="uk-text-warning">*</span>';
 $msg_spformmail_notinstall_captcha = 'reCAPTCHAプラグインがインストールされていません。';
 
 #   送信時に画像認証でエラーの場合のエラーメッセージ
-#     ※空文字にするとCAPTCHAプラグインが作成するエラーメッセージを使います。
+#     ※空文字にするとreCAPTCHAプラグインが作成するエラーメッセージを使います。
 #     ※空文字意外にするとそれを無視して固定メッセージにできます。
 $msg_spformmail_valid_captcha = '画像認証を行ってください。';
 
