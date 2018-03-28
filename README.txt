@@ -1,5 +1,5 @@
-静的ページPHPでフォームメールページを作成                        Version: 2.1.12
-                                                              Create: 2017/09/20
+静的ページPHPでフォームメールページを作成                        Version: 2.1.13
+                                                              Create: 2018/03/28
                              Authors: Hiroshi Sakuramoto - hiro AT winkey DOT jp
 
 
@@ -54,7 +54,7 @@
  modern_curveテーマ は public_html/layout/modern_curve/css/custom.css
  (※基本は使用テーマの最後に読み込まれるcssの末尾へ追加)
 
-※お使いのGeeklogが2.0以上の場合
+※お使いのGeeklogが2.0の場合
 
  add_to_gl20x_custom.css -> custom.css or style.css (末尾へ追加)
 
@@ -136,40 +136,39 @@ Geeklog2.0.0 : 1423行目付近
 
 
 +-----------------------------------------------------------------------------+
-| 画像認証(CAPTCHA)の利用
+| 画像認証(reCAPTCHA)の利用
 +-----------------------------------------------------------------------------+
 
- 1. 管理者でログインし、コンフィギュレーション > Captcha > メール送信をサポートする => 「はい」 で保存する。
+ 1. 管理者でログインし、コンフィギュレーション > reCAPTCHA > メール送信をサポートする => 「はい」 で保存する。
 
-※ CAPTCHAのテンプレートは以下を利用しています。
- private/plugins/captcha/templates/captcha_contact.thtml
+※ reCAPTCHAのPublic KeyとPrivate Keyは取得して適切に設定してください。
 
  2．画像認証のフォーム設定
 
 以前までのバージョンで以下のようになっているコメント部分の</table>と<submit>の間に画像認証用の設定を挿入します。
 <code>
 ),),
-##</table>
-##<submit>入力画面
+// } 1グループ
+## submit 入力画面 {
 array('action'=>'input',
 </code>
 
 <code>
 ),),
-##</table>
-##<table>画像認証
+// } 1グループ
+// 1グループ 画像認証 {
 array('title_captcha' => '画像認証', 'table_captcha' => array(
-//<tr>１行画像認証
+// 1行 画像認証 {
 array('header_captcha' => '画像認証',
   'valid_captcha' => $required_string,
   'error_captcha' => $msg_spformmail_valid_captcha,
   'error_notcaptcha' => $msg_spformmail_notinstall_captcha,
   'data' => array()
 ),
-//</tr>１行画像認証
+// } 1行 画像認証
 ),),
-##</table>画像認証
-##<submit>入力画面
+// } 1グループ 画像認証
+## submit 入力画面 {
 array('action'=>'input',
 </code>
 
@@ -305,6 +304,9 @@ array( 'type'=>'text', 'name'=>'q_date1', 'id'=>'q_date1', 'size'=>'20', 'maxlen
 
 
 【更新履歴】
+2018/03/28  2.1.13
+ * UIKit3.0対応 (thnks ivy)
+ * 画像認証のreCAPTCHAプラグイン対応
 2017/09/20  2.1.12
  * Refererチェックでエラー時にFORMが表示される不具合を修正
 2017/09/14  2.1.11

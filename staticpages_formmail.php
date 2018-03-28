@@ -99,7 +99,7 @@ $seni_items = array('input' => '情報入力', 'confirm' => '入力項目確認'
 $required_string = '<span class="uk-text-warning">*</span>';
 
 # ==画像認証関係==
-#   画像認証(CAPTCHA)がインストールされていない場合のエラーメッセージ
+#   画像認証(reCAPTCHA)がインストールされていない場合のエラーメッセージ
 $msg_spformmail_notinstall_captcha = 'reCAPTCHAプラグインがインストールされていません。';
 
 #   送信時に画像認証でエラーの場合のエラーメッセージ
