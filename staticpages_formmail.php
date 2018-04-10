@@ -3,7 +3,7 @@
 // +------------------------------------------------------------------+
 // | Copyright (C) 2008-2018 by the following authors:
 // | Authors    : Hiroshi Sakuramoto - hiro AT winkey DOT jp
-// | Version: 2.1.13
+// | Version: 2.1.14
 // |  front-end framewaork for UIKit: 3.0
 // +------------------------------------------------------------------+
 global $_CONF,$_USER,$_PLUGINS,$_SCRIPTS,$page; // Geeklog変数
@@ -35,13 +35,13 @@ $email_input_name = 'q_mail';
 # メール一致チェック項目指定
 #   メール確認でどちらも同じものを入力 というname属性を(=)で区切る(スペース等はあけない)
 #     例) 'email=reemail'
-$essential_email = 'q_mail=q_mail_re';
+$essential_email = '';
 
 # メールアドレスチェック項目指定
 #   入力された値がメールアドレスとして正しいかチェックをする
 #   INPUTタグの name属性の値をカンマ(,)区切りで指定する(スペース等はあけない)
 #     例) 'email,reemail'
-$propriety_email = 'q_mail,q_mail_re';
+$propriety_email = 'q_mail';
 
 # CSRF対策のTokenの有効時間(秒)
 $_fmtokenttl = 1800;
@@ -96,7 +96,7 @@ $kana_hiratokana_itemname = 'q_kana_1,q_kana_2';
 $seni_items = array('input' => '情報入力', 'confirm' => '入力項目確認', 'finish' => '入力完了');
 
 # 必須入力の文字列
-$required_string = '<span class="uk-text-warning">*</span>';
+$required_string = ' <span class="uk-text-warning uk-text-small">必須</span>';
 
 # ==画像認証関係==
 #   画像認証(reCAPTCHA)がインストールされていない場合のエラーメッセージ
@@ -106,14 +106,6 @@ $msg_spformmail_notinstall_captcha = 'reCAPTCHAプラグインがインストー
 #     ※空文字にするとreCAPTCHAプラグインが作成するエラーメッセージを使います。
 #     ※空文字意外にするとそれを無視して固定メッセージにできます。
 $msg_spformmail_valid_captcha = '画像認証を行ってください。';
-
-# ==日付関係==
-#   JavaScriptカレンダーでの日付表記
-#     phpのdate参照 http://php.net/manual/ja/function.date.php
-#       day   => 'd,D,j,l,N,S,w,z'
-#       month => 'F,m,M,n,t'
-#       year  => 'Y,y'
-#   ※テンプレート layout/theme/vendor/uikit/js/components/datepicker.js
 
 #   メールに記載される受付日時表記
 #     phpのdateのものがすべて使えます http://www.php.net/manual/en/function.date.php
@@ -150,11 +142,11 @@ $form_items = array(
 // 1グループ {
 array('title'=>'お客様情報', 'table'=>array(
 // 1行 {
-array('header'=>'法人様名',
+array('header'=>'法人様名（全角）',
   'valid_notkanahan'=>'q_kaisha', 'error_notkanahan'=>'法人様名に半角カタカナがあります。すべて全角で入力してください',
-  'help'=>'法人様名を入力してください。',
+  'help'=>'法人様名を全角で入力してください。',
   'data'=>array(
-array( 'type'=>'text', 'name'=>'q_organization', 'size'=>'40', 'maxlength'=>'60', 'class'=>'uk-input ime_on', 'placeholder'=>'全角で入力してください。' ),
+array( 'type'=>'text', 'name'=>'q_organization', 'maxlength'=>'60', 'class'=>'uk-input ime_on', 'placeholder'=>'例）◯◯◯株式会社' ),
   ),
 ),
 // } 1行
@@ -164,7 +156,7 @@ array('header'=>'お名前（漢字）',
   'valid_notkanahan'=>'q_name', 'error_notkanahan'=>'お名前（漢字）に半角カタカナがあります。すべて全角で入力してください',
   'help'=>'全角で名前を入力してください。',
   'data'=>array(
-array( 'type'=>'text', 'name'=>'q_name', 'size'=>'40', 'maxlength'=>'40', 'class'=>'uk-input ime_on', 'value'=>$username, 'placeholder'=>'全角で入力してください。' ),
+array( 'type'=>'text', 'name'=>'q_name', 'maxlength'=>'40', 'class'=>'uk-input ime_on', 'value'=>$username, 'placeholder'=>'例）山田花子' ),
   ),
 ),
 // } 1行
@@ -174,21 +166,18 @@ array('header'=>'お名前（カタカナ）',
   'valid_notkanahan'=>'q_kana', 'error_notkanahan'=>'お名前（カタカナ）に半角カタカナがあります。すべて全角で入力してください',
   'help'=>'全角カタカナでお名前（カタカナ）を入力してください。',
   'data'=>array(
-array( 'type'=>'text', 'name'=>'q_kana', 'size'=>'40', 'maxlength'=>'40', 'class'=>'uk-input ime_on', 'placeholder'=>'全角で入力してください。' ),
+array( 'type'=>'text', 'name'=>'q_kana', 'maxlength'=>'40', 'class'=>'uk-input ime_on', 'placeholder'=>'例）ヤマダハナコ' ),
   ),
 ),
 // } 1行
 // 1行 {
 array('header'=>'メールアドレス',
   'valid_require'=>$required_string, 'error_require'=>'メールアドレスが入力されていません',
-  'valid_equal'=>$essential_email, 'error_equal'=>'メールアドレスが一致しません',
   'valid_email'=>$propriety_email, 'error_email'=>'メールアドレスを正しく入力してください',
   'valid_hankaku'=>'q_mail,q_mail_re', 'error_hankaku'=>'メールアドレスはすべて半角で入力してください',
   'help'=>'半角でメールアドレスを入力してください。',
   'data'=>array(
-array( 'type'=>'text', 'name'=>'q_mail', 'size'=>'40', 'maxlength'=>'240', 'class'=>'uk-input ime_off uk-margin-small-bottom', 'value'=>$user_email ),
-array( 'input'=>'<br'.XHTML.'>' ),
-array( 'type'=>'text', 'name'=>'q_mail_re', 'size'=>'40', 'maxlength'=>'240', 'class'=>'uk-input ime_off', 'not_confirm'=>'true', 'not_csv'=>'true', 'value'=>$user_email, 'placeholder'=>'確認たのめ、もう一度入力してください。' ),
+array( 'type'=>'email', 'name'=>'q_mail', 'maxlength'=>'240', 'class'=>'uk-input ime_off uk-margin-small-bottom', 'value'=>$user_email ),
   ),
 ),
 // } 1行
@@ -196,10 +185,12 @@ array( 'type'=>'text', 'name'=>'q_mail_re', 'size'=>'40', 'maxlength'=>'240', 'c
 array('header'=>'ご連絡方法',
   'help'=>'ご連絡方法を選んでください。',
   'data'=>array(
-array( 'type'=>'radio', 'name'=>'q_answer_means', 'value'=>'メール', 'class'=>'uk-radio', 'checked'=>'checked' ),
-array( 'input'=>' メール' ),
-array( 'type'=>'radio', 'name'=>'q_answer_means', 'value'=>'電話', 'class'=>'uk-radio' ),
-array( 'input'=>' 電話' ),
+array( 'input'=>'<label for="r_m_mail">' ),
+array( 'type'=>'radio', 'name'=>'q_answer_means', 'id'=>'r_m_mail', 'value'=>'メール', 'class'=>'uk-radio', 'checked'=>'checked' ),
+array( 'input'=>' メール</label>' ),
+array( 'input'=>'<label for="r_m_tel">' ),
+array( 'type'=>'radio', 'name'=>'q_answer_means', 'id'=>'r_m_tel', 'value'=>'電話', 'class'=>'uk-radio' ),
+array( 'input'=>' 電話</label>' ),
 array( 'string'=>'<br'.XHTML.'>' ),
 array( 'input'=>'※お問い合わせ内容によって、メールをご希望の場合も電話連絡とさせて頂く場合があります。' ),
   ),
@@ -213,15 +204,18 @@ array('header'=>'電話番号',
   'valid_maxlen'=>'q_phone=13', 'error_maxlen'=>'電話番号の文字数は13文字以内で入力してください',
   'help'=>'半角数字と＋（プラス）と－（ハイフン）と半角スペースで電話番号を入力してください。',
   'data'=>array(
-array( 'type'=>'text', 'name'=>'q_phone', 'size'=>'20', 'maxlength'=>'13', 'class'=>'uk-input ime_off uk-form-width-medium', 'placeholder'=>'例) 03-1111-2222' ),
+array( 'type'=>'tel', 'name'=>'q_phone', 'maxlength'=>'13', 'class'=>'uk-input ime_off uk-form-width-medium', 'placeholder'=>'例) 03-1111-2222' ),
 array( 'string'=>'<br'.XHTML.'>' ),
 array( 'input'=>'※半角（例&nbsp;0311112222）<br'.XHTML.'>' ),
-array( 'type'=>'radio', 'name'=>'q_phone_kind', 'value'=>'自宅', 'class'=>'uk-radio', 'checked'=>'checked' ),
-array( 'input'=>' 自宅' ),
-array( 'type'=>'radio', 'name'=>'q_phone_kind', 'value'=>'勤務先', 'class'=>'uk-radio' ),
-array( 'input'=>' 勤務先' ),
-array( 'type'=>'radio', 'name'=>'q_phone_kind', 'value'=>'携帯', 'class'=>'uk-radio' ),
-array( 'input'=>' 携帯' ),
+array( 'input'=>'<label for="r_k_home">' ),
+array( 'type'=>'radio', 'name'=>'q_phone_kind', 'id'=>'r_k_home', 'value'=>'自宅', 'class'=>'uk-radio', 'checked'=>'checked' ),
+array( 'input'=>' 自宅</label>' ),
+array( 'input'=>'<label for="r_k_office">' ),
+array( 'type'=>'radio', 'name'=>'q_phone_kind', 'id'=>'r_k_office', 'value'=>'勤務先', 'class'=>'uk-radio' ),
+array( 'input'=>' 勤務先</label>' ),
+array( 'input'=>'<label for="r_k_mobile">' ),
+array( 'type'=>'radio', 'name'=>'q_phone_kind', 'id'=>'r_k_mobile', 'value'=>'携帯', 'class'=>'uk-radio' ),
+array( 'input'=>' 携帯</label>' ),
   ),
 ),
 // } 1行
@@ -229,7 +223,7 @@ array( 'input'=>' 携帯' ),
 array('header'=>'希望日',
   'help'=>'ご連絡希望日を選んでください。',
   'data'=>array(
-array( 'type'=>'text', 'name'=>'q_date1', 'size'=>'20', 'data-uk-datepicker'=>"{format:'YYYY.MM.DD'}", 'class'=>'uk-input uk-form-width-small', 'placeholder'=>'YYYY/MM/DD' ),
+array( 'type'=>'date', 'name'=>'q_date1', 'data-uk-datepicker'=>"{format:'YYYY.MM.DD'}", 'class'=>'uk-input uk-form-width-small' ),
   ),
 ),
 // } 1行
@@ -250,21 +244,26 @@ array('title'=>'申し込み内容', 'table'=>array(
 array('header'=>'お申し込みセミナー',
   'help'=>'セミナーを選んでください。',
   'data'=>array(
-array( 'type'=>'checkbox', 'name'=>'q_order_1', 'value'=>'セミナー１', 'class'=>'uk-checkbox' ),
-array( 'input'=>' ' ),
-array( 'type'=>'checkbox', 'name'=>'q_order_2', 'value'=>'セミナー２', 'class'=>'uk-checkbox' ),
-array( 'input'=>' ' ),
-array( 'type'=>'checkbox', 'name'=>'q_order_3', 'value'=>'セミナー３', 'class'=>'uk-checkbox' ),
+array( 'input'=>'<label for="r_o_sem1">' ),
+array( 'type'=>'checkbox', 'name'=>'q_order_1', 'id'=>'r_o_sem1', 'value'=>'セミナー１', 'class'=>'uk-checkbox' ),
+array( 'input'=>'</label> ' ),
+array( 'input'=>'<label for="r_o_sem2">' ),
+array( 'type'=>'checkbox', 'name'=>'q_order_2', 'id'=>'r_o_sem2', 'value'=>'セミナー２', 'class'=>'uk-checkbox' ),
+array( 'input'=>'</label> ' ),
+array( 'input'=>'<label for="r_o_sem3">' ),
+array( 'type'=>'checkbox', 'name'=>'q_order_3', 'id'=>'r_o_sem3', 'value'=>'セミナー３', 'class'=>'uk-checkbox' ),
+array( 'input'=>'</label>' ),
   ),
 ),
 // } 1行
 // 1行 {
 array('header'=>'お問い合わせ内容',
+  'valid_require'=>$required_string, 'error_require'=>'お問い合わせ内容が入力されていません',
   'valid_notkanahan'=>'q_other', 'error_notkanahan'=>'お問い合わせ内容に半角カタカナがあります。すべて全角で入力してください',
-  'valid_maxlen'=>'q_other=500', 'error_maxlen'=>'お問い合わせ内容の文字数は500文字以内で入力してください',
-  'help'=>'全角500文字以内でお問い合わせを入力してください。',
+  'valid_maxlen'=>'q_other=1000', 'error_maxlen'=>'お問い合わせ内容の文字数は1000文字以内で入力してください',
+  'help'=>'全角1000文字以内でお問い合わせを入力してください。',
   'data'=>array(
-array( 'type'=>'textarea', 'name'=>'q_other', 'class'=>'uk-textarea ime_on', 'style'=>'width: 95%; height: 100px;', 'onKeyup'=>"var n=500-this.value.length;var s=document.getElementById('tasp1');s.innerHTML='('+n+')';", 'placeholder'=>'お問い合わせ内容を入力してください。' ),
+array( 'type'=>'textarea', 'name'=>'q_other', 'class'=>'uk-textarea ime_on', 'style'=>'width: 95%; height: 100px;', 'onKeyup'=>"var n=1000-this.value.length;var s=document.getElementById('tasp1');s.innerHTML='('+n+')';", 'placeholder'=>'お問い合わせ内容を入力してください。' ),
 array( 'input'=>'<br'.XHTML.'>'."<strong><span id='tasp1'></span></strong>".'<br'.XHTML.'>' ),
   ),
 ),
@@ -272,12 +271,12 @@ array( 'input'=>'<br'.XHTML.'>'."<strong><span id='tasp1'></span></strong>".'<br
 ),),
 // } 1グループ
 // 1グループ 画像認証 {
-array('title_captcha' => '画像認証', 'table_captcha' => array(
+array('title_captcha'=>'画像認証', 'table_captcha'=>array(
 // 1行 画像認証 {
-array('header_captcha' => '画像認証',
-  'valid_captcha' => $required_string,
-  'error_captcha' => $msg_spformmail_valid_captcha,
-  'error_notcaptcha' => $msg_spformmail_notinstall_captcha,
+array('header_captcha'=>'画像認証',
+  'valid_captcha'=>$required_string, 'error_captcha'=>$msg_spformmail_valid_captcha,
+  'error_notcaptcha'=>$msg_spformmail_notinstall_captcha,
+  'help'=>'画像認証をチェックしてロボットでないことを証明してください。',
   'data' => array()
 ),
 // } 1行 画像認証
@@ -286,7 +285,7 @@ array('header_captcha' => '画像認証',
 ## submit 入力画面 {
 array('action'=>'input',
   'data'=>array(
-array( 'string'=>'<div class="uk-text-center uk-margin-top">' ),
+array( 'string'=>'<div class="uk-text-center uk-margin-large-top">' ),
 array( 'type'=>'submit', 'name'=>'submit', 'class'=>'uk-button uk-button-primary', 'value'=>'入力項目確認画面へ' ),
 array( 'string'=>'</div>' ),
   ),
@@ -295,7 +294,7 @@ array( 'string'=>'</div>' ),
 ## submit 確認画面 {
 array('action'=>'confirm',
   'data'=>array(
-array( 'string'=>'<div class="uk-text-center uk-margin-top">' ),
+array( 'string'=>'<div class="uk-text-center uk-margin-large-top">' ),
 array( 'type'=>'submit', 'name'=>'goback', 'class'=>'uk-button', 'value'=>'戻る' ),
 array( 'string'=>'　' ),
 array( 'type'=>'submit', 'name'=>'submit', 'class'=>'uk-button uk-button-primary', 'value'=>'送信する' ),
@@ -319,12 +318,12 @@ function _fmGetAction ($err) {
 }
 
 function _fmMkSeni ($items, $action) {
-  $buf = '<div class="uk-button-group uk-child-width-1-3@m uk-text-center uk-margin">'.LB;
+  $buf = '<div class="uk-child-width-1-5@m uk-grid-small uk-grid-match uk-grid uk-text-center uk-margin" uk-grid>'.LB;
   foreach ($items as $key => $value) {
     if ($action == $key) {
-      $buf .= '  <button class="uk-button uk-button-secondary uk-text-nowrap" style="cursor: default">'.$value.'</button>'.LB;
+      $buf .= '  <div><div class="uk-card uk-card-body uk-card-secondary uk-padding-small uk-text-nowrap" aria-current="step">'.$value.'</div></div>'.LB;
     } else {
-      $buf .= '  <button class="uk-button uk-button-default uk-text-nowrap" disabled>'.$value.'</button>'.LB;
+      $buf .= '  <div><div class="uk-card uk-card-body uk-card-default uk-padding-small uk-text-nowrap">'.$value.'</div></div>'.LB;
     }
   }
   $buf .= '</div>'.LB;
@@ -339,6 +338,7 @@ function _fmPutiFilter($s) {
 
 function _fmChkUseCAPTCHA_HTML () {
   global $_RECAPTCHA_CONF;
+  if (!function_exists('plugin_itemPreSave_recaptcha')) { return $msg_notcaptcha; }
   if ( RECAPTCHA_isEnabled() && RECAPTCHA_requireCaptcha('contact') ) {
     return true;
   }
@@ -547,7 +547,7 @@ function _fmMkTitle ($title) {
   return <<<END
 
 <fieldset class="uk-fieldset">
-  <lagend class="uk-legend">$title</legend>
+  <legend class="uk-legend">$title</legend>
 
 END;
 }
@@ -569,7 +569,7 @@ function _fmMkForm_Radio_Checked (&$attributes) {
 function _fmMkForm_Input ($attributes, $addclass, $hidden = false) {
   if ($hidden) {
     if ($attributes['type'] == 'radio' || $attributes['type'] == 'checkbox') {
-      if ($attributes['value'] != $_POST[$attributes['name']]) return '';
+      if($attributes['value'] != $_POST[$attributes['name']]) return '';
     }
     $attributes['type'] = 'hidden';
   }
@@ -581,11 +581,11 @@ function _fmMkForm_Input ($attributes, $addclass, $hidden = false) {
   }
   $buf = '<input';
   foreach ($attributes as $key => $value) {
-    if ($key != 'not_confirm') { $buf .= ' '.$key.'="'.$value.'"'; }
+    if($key != 'not_confirm') $buf .= ' '.$key.'="'.$value.'"';
   }
   $buf .= XHTML.'>';
   if ($hidden || $attributes['type'] == 'checkbox') {
-    if ( !isset($attributes['not_confirm']) || ! $attributes['not_confirm'] ) { $buf .= ' ' . $attributes['value']; }
+    if( !isset($attributes['not_confirm']) || ! $attributes['not_confirm'] ) $buf.=' '.$attributes['value'];
   }
   return $buf;
 }
@@ -640,16 +640,10 @@ function _fmMkForm_Item ($items, $action, $addclass) {
     $buf .= _fmMkForm_Input($items,'', true);
   } else {
     switch ($items['type']) {
-      case 'text': $buf .= _fmMkForm_Input($items, $addclass); break;
-      case 'password': $buf .= _fmMkForm_Input($items, $addclass); break;
       case 'hidden': $buf .= _fmMkForm_Input($items, $addclass, true); break;
-      case 'radio': $buf .= _fmMkForm_Input($items, $addclass); break;
-      case 'checkbox': $buf .= _fmMkForm_Input($items, $addclass); break;
       case 'select': $buf .= _fmMkForm_Select($items, $addclass); break;
       case 'textarea': $buf .= _fmMkForm_Textarea($items, $addclass); break;
-      case 'submit': $buf .= _fmMkForm_Input($items, $addclass); break;
-      case 'reset': $buf .= _fmMkForm_Input($items, $addclass); break;
-      case 'button': $buf .= _fmMkForm_Input($items, $addclass); break;
+      default: $buf .= _fmMkForm_Input($items, $addclass); break;
     }
   }
   return $buf;
@@ -677,6 +671,41 @@ function _fmMkTable_Data ($datas, $action, $addclass='') {
   return $buf;
 }
 
+function _fmAutoAttr_required(&$lines){
+  for ($i=0; $i<count($lines['data']); $i++) {
+    if (isset($lines['valid_require']) && isset($lines['data'][$i]['type'])) {
+      if (in_array($lines['data'][$i]['type'],array('text','password','radio','checkbox','select','textarea','search','tel','url','email','date','time','number','file')) && !isset($lines['data'][$i]['required'])) {
+        $lines['data'][$i]['required'] = '';
+      }
+    }
+  }
+}
+
+function _fmAutoAttr_id(&$lines){
+  $firstid='';
+  for ($i=0; $i<count($lines['data']); $i++) {
+    if (isset($lines['data'][$i]['type']) && !in_array($lines['data'][$i]['type'],array('radio','checkbox'))) {
+      if (isset($lines['data'][$i]['name']) && !isset($lines['data'][$i]['id'])) { $lines['data'][$i]['id'] = $lines['data'][$i]['name']; }
+      if (isset($lines['data'][$i]['id']) && empty($firstid)) { $firstid=$lines['data'][$i]['id']; }
+    }
+  }
+  return $firstid;
+}
+
+function _fmAutoAttr_aria_desc(&$lines, $inputid){
+  $helpid='';
+  if(empty($inputid)) return $helpid;
+  for ($i=0; $i<count($lines['data']); $i++) {
+    if (isset($lines['help']) && isset($lines['data'][$i]['type'])) {
+      if (in_array($lines['data'][$i]['type'],array('text','password','radio','checkbox','select','textarea','search','tel','url','email','date','time','number','file')) && !isset($lines['data'][$i]['aria-describedby'])) {
+        $helpid='help'.$inputid;
+        $lines['data'][$i]['aria-describedby'] = $helpid;
+      }
+    }
+  }
+  return $helpid;
+}
+
 function _fmMkCAPTCHA_HTML($name, $msg_notcaptcha) {
   global $_RECAPTCHA_CONF;
   $captcha = '';
@@ -696,14 +725,11 @@ function _fmMkTable ($tables, $action) {
   foreach ($tables as $lines) {
     $flg_valid_captcha=false;
     $errflg = '';
-    $textclass=''; $formclass=''; $formid=''; $labelfor='';
+    $textclass=''; $formclass=''; $labelfor=''; $formid=''; $helpid='';
+    if ($action == 'input') { _fmAutoAttr_required($lines); $formid = _fmAutoAttr_id($lines); $helpid=_fmAutoAttr_aria_desc($lines,$formid); }
     // 1行のエラーチェック
     if (!empty($_POST) && !empty($_POST['action'])) { $errflg = _fmValidateLines($lines); }
     if ($errflg) { $textclass=' uk-text-danger'; $formclass=' uk-form-danger'; }
-    for ($i=0; $i<count($lines['data']); $i++) {
-      if (isset($lines['data'][$i]['name']) && !isset($lines['data'][$i]['id'])) { $lines['data'][$i]['id'] = $lines['data'][$i]['name']; }
-      if (isset($lines['data'][$i]['id'])) { if(isset($lines['data'][$i]['type']) && !in_array($lines['data'][$i]['type'],array('radio','checkbox'))) { $formid=$lines['data'][$i]['id'];break; } }
-    }
     if (!empty($formid)) { $labelfor=' for="'.$formid.'"'; }
     $buf .= LB;
     $buf .= '  <div class="uk-margin">'.LB;
@@ -712,7 +738,6 @@ function _fmMkTable ($tables, $action) {
     if (isset($lines['header_captcha'])) { $buf .= $lines['header_captcha']; }
     if (isset($lines['valid_require'])) { $buf .= $lines['valid_require']; }
     if (isset($lines['valid_captcha'])) { $buf .= $lines['valid_captcha']; $flg_valid_captcha=true; }
-    if (isset($lines['help']) && $action == 'input') { $buf .= ' (<span uk-tooltip="'.$lines['help'].'">?</span>)'; }
     $buf .= '</label>'.LB;
     $buf .= '    <div class="uk-form-controls">'.LB;
     if (isset($lines['data'])) {
@@ -722,6 +747,8 @@ function _fmMkTable ($tables, $action) {
         $buf .= _fmMkTable_Data($lines['data'], $action, $formclass);
       }
     }
+    if($helpid !== '') $helpid = ' id="'.$helpid.'"';
+    if(isset($lines['help']) && $action == 'input') $buf .= ' <div class="uk-text-warning uk-text-small"'.$helpid.'> '.$lines['help'].'</div>';
     $buf .= LB.'    </div>'.LB;
     $buf .= '  </div>'.LB;
   }
@@ -857,7 +884,7 @@ if ($action == 'input' || $action == 'confirm') {
 $seni
 <div id="$page" class="uk-margin-left uk-margin-right">
 $valid
-<form name="subForm" class="uk-form-stacked" method="post" action="{$pageurl}">
+<form name="subForm" class="uk-form-stacked uk-margin-large" method="post" action="{$pageurl}">
 $form
 </form>
 </div>

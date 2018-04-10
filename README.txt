@@ -1,5 +1,5 @@
-静的ページPHPでフォームメールページを作成                        Version: 2.1.13
-                                                              Create: 2018/03/28
+静的ページPHPでフォームメールページを作成                        Version: 2.1.14
+                                                              Create: 2018/04/10
                              Authors: Hiroshi Sakuramoto - hiro AT winkey DOT jp
 
 
@@ -169,6 +169,7 @@ array('header_captcha' => '画像認証',
   'valid_captcha' => $required_string,
   'error_captcha' => $msg_spformmail_valid_captcha,
   'error_notcaptcha' => $msg_spformmail_notinstall_captcha,
+  'help'=>'画像認証をチェックしてロボットでないことを証明してください。',
   'data' => array()
 ),
 // } 1行 画像認証
@@ -194,29 +195,27 @@ maxlengthを項目設定の中に追加します。
 (入力エラーチェックの valid_maxlen も一緒に利用することをお勧めします)
 
 例）====================================
-    array('type' => 'text',
-          'name' => 'q_name_1',
-          'size' => '40',
-          'maxlength' => '40',    <--ここ
-          'class' => 'bginput ime_on',
-          'value' => $username
-    ),
+array( 'type'=>'text',
+       'name'=>'q_name',
+       'maxlength'=>'40',    <--ここ
+       'class'=>'uk-input ime_on',
+       'value'=>$username,
+       'placeholder'=>'例）山田花子'
+     ),
 ========================================
 
 
 
 【文字入力のモード(IME)を半角、全角を自動で適切に変更するには】
 class指定の中に"ime_on"を指定すると全角モードになり、"ime_off"を指定すると半角モードになります。
-※CSSを利用していますのでサンプルCSSから該当部分をお使いのテーマCSSに適用してください。
-
 例）====================================
-    array('type' => 'text',
-          'name' => 'q_name_1',
-          'size' => '40',
-          'maxlength' => '40',
-          'class' => 'bginput ime_on',  <--ここのime_onで全角モードになる
-          'value' => $username
-    ),
+array( 'type'=>'text',
+       'name'=>'q_name',
+       'maxlength'=>'40',
+       'class'=>'uk-input ime_on',  <--ここのime_onで全角モードになる
+       'value'=>$username,
+       'placeholder'=>'例）山田花子'
+     ),
 ========================================
 
 
@@ -247,25 +246,26 @@ valid_captcha => '必須用文字列'  : CAPTCHA専用チェック
 その１）JavaScriptにより(Twitterのように)のこり文字数を表示して入力しているユーザに視覚的にうったえかけることで送信(POST)前でも文字数がわかる。
 
 ========================================
-            array('type' => 'textarea',
-                  'name' => 'q_other',
-                  'class' => 'bginput ime_on',
-                  'style' => 'width: 95%; height: 100px;',
-                  'onKeyup' => "var n=200-this.value.length;var s=document.getElementById('tasp1');s.innerHTML='('+n+')';"  <--ここで残り入力可能文字数を表示。200が最大文字数。tasp1が表示するSPANのid。
-            ),
-            array('input' => '<br'.XHTML.">※お問い合わせ内容を入力してください。<strong><span id='tasp1'></span></strong><br".XHTML.'>'),  <--ここのSPANタグ内へ表示。複数のtextareで行う場合はidを適切に変えること。
+array( 'type'=>'textarea',
+       'name'=>'q_other',
+       'class'=>'uk-textarea ime_on',
+       'style'=>'width: 95%; height: 100px;',
+       'onKeyup'=>"var n=1000-this.value.length;var s=document.getElementById('tasp1');s.innerHTML='('+n+')';",<--ここで残り入力可能文字数を表示。200が最大文字数。tasp1が表示するSPANのid。
+       'placeholder'=>'お問い合わせ内容を入力してください。'
+     ),
+array( 'input'=>'<br'.XHTML.'>'."<strong><span id='tasp1'></span></strong>".'<br'.XHTML.'>' ),  <--ここのSPANタグ内へ表示。複数のtextareで行う場合はidを適切に変えること。
 ========================================
 
 
 その２）送信(POST)された入力内容をチェックして文字数を超えていたらエラーを表示。
 
 ========================================
-    array('header' => 'お問い合わせ内容',
-          'valid_notkanahan' => 'q_other',
-          'error_notkanahan' => 'お問い合わせ内容に半角カタカナがあります。すべて全角で入力してください',
-          'valid_len' => 'q_other=200',
-          'error_len' => 'お問い合わせ内容の文字数は200文字以内で入力してください',
-          'data' =>
+array('header' => 'お問い合わせ内容',
+      'valid_notkanahan' => 'q_other',
+      'error_notkanahan' => 'お問い合わせ内容に半角カタカナがあります。すべて全角で入力してください',
+      'valid_len' => 'q_other=1000',
+      'error_len' => 'お問い合わせ内容の文字数は1000文字以内で入力してください',
+      'data' =>
 ========================================
 
 
@@ -273,43 +273,36 @@ valid_captcha => '必須用文字列'  : CAPTCHA専用チェック
 
 
 +-----------------------------------------------------------------------------+
-| 日付項目でのカレンダー表示
+| 日付項目でのカレンダー表示(HTML5のtype=date)
 +-----------------------------------------------------------------------------+
 
 【日付入力でカレンダーを表示して選択】
-JavaScript + CSS にてカレンダーを表示して日付を選択できるようにします。
+HTML5のinputのtype=dateを利用
 
 その１）デフォルト設定
 
-カレンダー表示用のJavaScriptを以下のように設定します。
+カレンダー表示用のINPUTタグを以下のように宣言します。
 
-以下の宣言の中にq_date1という部分があり、これは「その２）利用例」のnameと一致しています。変更する場合は両方を変更してください。
 ========================================
-# カレンダー表示 jqueryui datepicker http://jqueryui.com/datepicker/
-#   ※使わない場合はJSLIB;までコメントアウトしてください。
-$jslib_datepicker = <<<JSLIB
-$(function() { $.datepicker.setDefaults( $.datepicker.regional['ja'] ); $("#q_date1").datepicker({ dateFormat: '$date_js_cal', dayNamesMin: ['日','月','火','水','木','金','土'], monthNames: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'], showMonthAfterYear: true }); });
-JSLIB;
+array( 'type'=>'date',
+       'name'=>'q_date1',
+       'data-uk-datepicker'=>"{format:'YYYY.MM.DD'}",
+       'class'=>'uk-input uk-form-width-small'
+     ),
 ========================================
 
-
-その２）利用例
-カレンダーを利用するようidのq_date1という部分は「その１）デフォルト設定」の「JavaScriptライブラリ等の宣言」の中にあるq_date1と一致しています。変更する場合は両方を変更してください。
-========================================
-//<tr>１行
-array('header'=>'希望日',
-  'data'=>array(
-array( 'type'=>'text', 'name'=>'q_date1', 'id'=>'q_date1', 'size'=>'20', 'maxlength'=>'10', 'class'=>'bginput ime_off' ),
-  ),
-),
-//</tr>１行
-========================================
 
 
 
 
 
 【更新履歴】
+2018/04/10  2.1.14
+ * UIKit3.0により厳密に対応
+ * HTML5に対応しHTML構造を一部見直し
+ * HTML5で追加されたINPUTへも対応(サンプルのデフォルト設定でもemail,date,telを利用)
+ * スクリーンリーダーでの読み上げにも最適になるようHTML構造を修正しARIA属性の記述も付与 (thanks by milk)
+ * helpを?のクリック表示からINPUTの後ろへ表示
 2018/03/28  2.1.13
  * UIKit3.0対応 (thnks ivy)
  * 画像認証のreCAPTCHAプラグイン対応
